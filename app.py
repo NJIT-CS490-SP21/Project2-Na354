@@ -2,7 +2,7 @@ import os
 from flask import Flask, send_from_directory, json, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
-PLAYER_ID = 69420
+
 app = Flask(__name__, static_folder='./build/static')
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -32,15 +32,45 @@ def on_disconnect():
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
+
+
+
+
+
+LastBoard = ['false','','','','','','','','','','0','0']
 @socketio.on('board')
 def on_chat(data): # data is whatever arg you pass in your emit call on client
     print(data["message"][10])
-    data['message'][10] = str(PLAYER_ID)
+    #data['message'][10] = str(PLAYER_ID)
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    if (data['message'][10] ==  "0"):
-        socketio.emit('board',  data, broadcast=True, include_self=False)
+    #if (data['message'][10] ==  "0"):
+    global LastBoard
+    LastBoard = data['message']
+    print(LastBoard)
+    socketio.emit('board',  data, broadcast=False, include_self=True)
 
+
+
+
+PLAYER_ID = 0
+
+
+
+
+
+
+
+
+@socketio.on('LogIn')
+def on_logIn(data):
+    print(data)
+    global PLAYER_ID
+    data['id'] = str(PLAYER_ID)
+    data['board'] = LastBoard
+    PLAYER_ID = PLAYER_ID + 1
+    print(PLAYER_ID)
+    socketio.emit('LogIn',  data, broadcast=False, include_self=True)
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
     app,
