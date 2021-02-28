@@ -2,18 +2,17 @@ import React from 'react';
 import './Board.css';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
-import {haslogged} from './App.js';
 const socket = io();
 
+export var logedin = '';
+
 export function LogIn() {
-    
-    const [UserName, ChangeName] = useState(['']);
+    logedin = '';
     const inputRef = useRef(null);
     
     function onClickButton(){
         const userText = inputRef.current.value;
-        ChangeName(userText);
-        haslogged = 'test';
+        logedin = 'true';
         socket.emit('LogIn', {message: userText});
     }
     

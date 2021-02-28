@@ -3,8 +3,10 @@ import './App.css';
 import './Board.css';
 import { Board } from './Board.js';
 import { LogIn } from './LogIn.js';
+import { Reset } from './Reset.js';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
+import {logedin} from './LogIn.js';
 
 const socket = io(); // Connects to socket connection
 
@@ -12,12 +14,13 @@ var id = '';
 var player = '';
 var lastTurn = '0';
 export var haslogged = '';
+var loged = 0;
 
 
 
 function App() {
    const [myList, changeList] = useState(['false','','','','','','','','','','0','0']);
-  
+
     useEffect(() => {
     // Listening for a chat event emitted by the server. If received, we
     // run the code in the function that is passed in as the second arg
@@ -25,34 +28,45 @@ function App() {
         const newList = [...data.message];
         newList[10] = id;
         console.log(newList);
-        changeList(data.message);
+        console.log(id);
+        console.log("doing that board shit");
+        changeList(newList);
     });
   }, []);
-  
-  
+
   useEffect(() => {
-      
+
     socket.on('LogIn', (data) => {
-    if (haslogged == ''){
+    if (logedin == 'true' && loged == 0){
       player = data.message;
       id = data.id;
       const newList = [...data.board];
       newList[10] = id;
       changeList(newList);
       console.log("LOGGING IN");
-      console.log(id)
-      haslogged = 'no need';
+      console.log(id);
+      loged++;
     }
     });
   }, []);
   
- 
-  
+  useEffect(() => {
+    socket.on('Reset', (data) => {
+        const newList = [...data];
+        id = '';
+        loged--;
+        console.log(newList);
+        console.log("doing that RESETING board shit");
+        changeList(newList);
+    });
+  }, []);
+
+
+
   if (id != ""){
-      return (<div> <Board list={myList} changeList={changeList}/> </div>);
+      return (<div> <Board list={myList} changeList={changeList}/> <Reset/> </div>);
   }
   else
-  console.log('NOT WORKING');
    return (
        <div>
        <LogIn/>

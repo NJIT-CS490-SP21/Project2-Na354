@@ -5,35 +5,43 @@ import io from 'socket.io-client';
 const socket = io();
 
 export function Board(props) {
-    //console.log(props);
+    
     
     function onClickButton(test){
         const newList = [...props.list];
         if(props.list[10] == props.list[11]){
-            console.log(newList)
-            
-            
+            //console.log(newList);
             if(newList[0] == 'false' && newList[11] == '0'){
+                if (newList[test] == ''){
                 newList[test] = 'x';
                 newList[0] = 'true';
                 newList[11] = '1';
+                console.log(newList);
+                console.log('done with board.js');
+                props.changeList(newList);
+                socket.emit('board', {message: newList});
+                }
             }
             else {
+                if (newList[test] == ''){
                 newList[test] = "o";
                 newList[0] = 'false';
                 newList[11] = '0';
+                console.log(newList);
+                console.log('done with board.js');
+                props.changeList(newList);
+                socket.emit('board', {message: newList});
+                    
+                }
             }
-            console.log(newList)
-            console.log('done with board.js')
-            props.changeList(newList);
-            socket.emit('board', {message: newList});
+            
         }
         
         
         
         else
         {
-            console.log(newList)
+            console.log(newList);
             console.log("props is working as such");
             
        
