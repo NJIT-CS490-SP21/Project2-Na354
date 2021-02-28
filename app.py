@@ -19,6 +19,7 @@ socketio = SocketIO(
 @app.route('/<path:filename>')
 def index(filename):
     return send_from_directory('./build', filename)
+    
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
@@ -60,20 +61,25 @@ Default = ['false','','','','','','','','','','0','0']
 def on_reset():
     print('ResetBoard')
     global PLAYER_ID
+    global PLAYER_LIST
     global LastBoard
     global Default
     PLAYER_ID = 0
+    PLAYER_LIST = []
     LastBoard = Default
     socketio.emit('Reset', Default, broadcast=True, include_self=False)
 
 PLAYER_ID = 0
-
+PLAYER_LIST = []
 
 
 @socketio.on('LogIn')
 def on_logIn(data):
-    print(data)
     global PLAYER_ID
+    global PLAYER_LIST
+    PLAYER_LIST.append(data['message'])
+    print(PLAYER_LIST)
+    data['message'] = PLAYER_LIST
     data['id'] = str(PLAYER_ID)
     data['board'] = LastBoard
     PLAYER_ID = PLAYER_ID + 1

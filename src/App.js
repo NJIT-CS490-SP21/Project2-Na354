@@ -20,6 +20,7 @@ var loged = 0;
 
 function App() {
    const [myList, changeList] = useState(['false','','','','','','','','','','0','0']);
+   const [Players, AddPlayer] = useState(['','','','','']);
 
     useEffect(() => {
     // Listening for a chat event emitted by the server. If received, we
@@ -35,10 +36,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-
+    
     socket.on('LogIn', (data) => {
+        //const newList = [...data.message];
+       // console.log(newList);
+        
     if (logedin == 'true' && loged == 0){
-      player = data.message;
       id = data.id;
       const newList = [...data.board];
       newList[10] = id;
@@ -46,7 +49,10 @@ function App() {
       console.log("LOGGING IN");
       console.log(id);
       loged++;
+     
     }
+    //AddPlayer(newList);
+    //console.log(Players);
     });
   }, []);
   
