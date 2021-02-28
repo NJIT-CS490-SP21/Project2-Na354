@@ -29,7 +29,6 @@ function App() {
         newList[10] = id;
         console.log(newList);
         console.log(id);
-        console.log("doing that board shit");
         changeList(newList);
     });
   }, []);
@@ -56,7 +55,6 @@ function App() {
         id = '';
         loged--;
         console.log(newList);
-        console.log("doing that RESETING board shit");
         changeList(newList);
     });
   }, []);
