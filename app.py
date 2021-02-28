@@ -84,7 +84,7 @@ def on_logIn(data):
     data['board'] = LastBoard
     PLAYER_ID = PLAYER_ID + 1
     print(PLAYER_ID)
-    socketio.emit('LogIn',  data, broadcast=False, include_self=True)
+    socketio.emit('LogIn',  data, broadcast=True, include_self=True)
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 
 def CheckForWin():
