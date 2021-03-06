@@ -4,14 +4,15 @@ import './Board.css';
 import { Board } from './Board.js';
 import { LogIn } from './LogIn.js';
 import { Reset } from './Reset.js';
+import { Leaderboard } from './Leaderboard.js';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import {logedin} from './LogIn.js';
+import {LeaderOpen} from './Leaderboard.js';
 
 const socket = io(); // Connects to socket connection
 
 var id = '';
-var player = '';
 var lastTurn = '0';
 export var haslogged = '';
 var loged = 0;
@@ -21,10 +22,12 @@ var loged = 0;
 function App() {
    const [myList, changeList] = useState(['false','','','','','','','','','','0','0']);
    const [Players, AddPlayer] = useState(['','','','','']);
-
+   const [Leader_Data, Updateboard] = useState(['']);
+    
+    
+    
+    
     useEffect(() => {
-    // Listening for a chat event emitted by the server. If received, we
-    // run the code in the function that is passed in as the second arg
     socket.on('board', (data) => {
         const newList = [...data.message];
         newList[10] = id;
@@ -35,7 +38,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    
     socket.on('LogIn', (data) => {
         //const newList = [...data.message];
        // console.log(newList);
@@ -64,18 +66,37 @@ function App() {
         changeList(newList);
     });
   }, []);
+      
+  useEffect(() => {
+    
+    socket.on('Leaderboard', (data) => {
+
+    if (LeaderOpen == 'true');        
+     console.log('Useeffect working');  
+     const newList = [Leaderboard];
+     newList[0] = 'test';
+     Updateboard(newList);
+    });
+  }, []);
+  
+      
+  
 
 
+    if (LeaderOpen == "true"){
+        return(<Leaderboard/>);
+        
+    }
 
-  if (id != ""){
-      return (<div> <Board list={myList} changeList={changeList}/> <Reset/> </div>);
-  }
-  else
-   return (
-       <div>
-       <LogIn/>
-       </div>
-       );
+    else if (id != ""){
+         return (<div> <Board list={myList} changeList={changeList}/> <Reset/> <Leaderboard/> </div>);
+        
+    }
+    
+    else if (id == "") {
+        return (<div> <LogIn/> </div>);
+        
+    }
 }
 
 export default App;

@@ -17,6 +17,8 @@ socketio = SocketIO(
 
 @app.route('/', defaults={"filename": "index.html"})
 @app.route('/<path:filename>')
+
+
 def index(filename):
     return send_from_directory('./build', filename)
     
@@ -35,10 +37,11 @@ def on_disconnect():
 # 'chat' is a custom event name that we just decided
 
 
-
-
-
 LastBoard = ['false','','','','','','','','','','0','0']
+Default = ['false','','','','','','','','','','0','0']
+PLAYER_ID = 0
+PLAYER_LIST = []
+
 @socketio.on('board')
 def on_chat(data): # data is whatever arg you pass in your emit call on client
     print(data["message"][10])
@@ -53,10 +56,6 @@ def on_chat(data): # data is whatever arg you pass in your emit call on client
     socketio.emit('board',  data, broadcast=True, include_self=True)
 
 
-
-
-
-Default = ['false','','','','','','','','','','0','0']
 @socketio.on('Reset')
 def on_reset():
     print('ResetBoard')
@@ -68,10 +67,7 @@ def on_reset():
     PLAYER_LIST = []
     LastBoard = Default
     socketio.emit('Reset', Default, broadcast=True, include_self=False)
-
-PLAYER_ID = 0
-PLAYER_LIST = []
-
+    
 
 @socketio.on('LogIn')
 def on_logIn(data):
@@ -87,8 +83,15 @@ def on_logIn(data):
     socketio.emit('LogIn',  data, broadcast=True, include_self=True)
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 
+@socketio.on('Leaderboard')
+def on_LeaderboardOpen():
+    socketio.emit('Leaderboard', broadcast=True, include_self=True)
+    print("opening Leaderboard")
+    
 def CheckForWin():
     print("test")
+    
+    
 socketio.run(
     app,
     host=os.getenv('IP', '0.0.0.0'),
