@@ -1,15 +1,19 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
+import { Display } from './DisplayL.js';
 import io from 'socket.io-client';
 
 const socket = io();
 
 export var LeaderOpen = 'false';
 
+
 export function Leaderboard() {
-    
+
+const [data, changeData] = useState([['Abadio','100','5'], ['Sickist','96','3']]);
+
+
    function onClickButton(){
-        console.log('LeaderBoardButton');
         
         if (LeaderOpen == 'false'){
             LeaderOpen = 'true';
@@ -17,8 +21,7 @@ export function Leaderboard() {
         else
             LeaderOpen = 'false';
         
-        console.log(LeaderOpen);
-        socket.emit('Leaderboard')
+        socket.emit('Leaderboard');
     }
     
     if(LeaderOpen == 'false') {
@@ -35,9 +38,8 @@ export function Leaderboard() {
                 <th>rank</th>
                 <th>wins</th>
             </tr>
-    <td>Abadio</td>
-    <td>100</td>
-    <td>10</td>
+            {data.map(item => <Display name={item} />)}
+    
     </table> 
     </div>);
 }

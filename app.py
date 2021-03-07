@@ -48,6 +48,7 @@ def on_chat(data): # data is whatever arg you pass in your emit call on client
     global LastBoard
     LastBoard = data['message']
     print(LastBoard)
+    CheckForWin()
     if('' not in LastBoard):
         print('BOARD FULL')
         socketio.emit('board',  data, broadcast=True, include_self=True)
@@ -89,9 +90,61 @@ def on_LeaderboardOpen():
     print("opening Leaderboard")
     
 def CheckForWin():
-    print("test")
+    print("checking for winner")
     
+    #check Vertical Win condition
+    for i in range(1,4):
+        if((LastBoard[i] != '') and (LastBoard[i] == LastBoard[(i+3)]) and (LastBoard[i] == LastBoard[(i+6)])):
+            
+            if(LastBoard[i] == 'x'):
+                socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
+                print("winner found")
+                
+                
+            else:
+                socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
+                print("winner found")
+             
     
+    #check Horiziontal Win condition
+    for i in range(1,8,3):
+        print(i)
+        if((LastBoard[i] != '') and (LastBoard[i] == LastBoard[(i+1)]) and (LastBoard[i] == LastBoard[(i+2)])):
+            
+            if(LastBoard[i] == 'x'):
+                socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
+                print("winner found")
+                
+                
+            else:
+                socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
+                print("winner found")
+                
+                
+    #checks Diagonal
+    if((LastBoard[1] != '') and (LastBoard[1] == LastBoard[5]) and (LastBoard[1] ==  LastBoard[9])):
+            
+            if(LastBoard[1] == 'x'):
+                socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
+                print("winner found")
+                
+                
+            else:
+                socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
+                print("winner found")
+                
+    
+    if((LastBoard[3] != '') and (LastBoard[3] == LastBoard[5]) and (LastBoard[3] ==  LastBoard[7])):
+            
+            if(LastBoard[1] == 'x'):
+                socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
+                print("winner found")
+                
+                
+            else:
+                socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
+                print("winner found")
+                
 socketio.run(
     app,
     host=os.getenv('IP', '0.0.0.0'),
