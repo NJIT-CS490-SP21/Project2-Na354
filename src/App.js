@@ -72,7 +72,7 @@ function App() {
 
     if (LeaderOpen == 'true');        
      const newList = [...data];
-     console.log(newList)
+     console.log(newList);
      Updateboard(newList);
     });
   }, []);
