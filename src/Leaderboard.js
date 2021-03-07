@@ -32,14 +32,6 @@ const [data, changeData] = useState([['Abadio','100','5'], ['Sickist','96','3']]
     else
     return(<div> 
         <button onClick={onClickButton}>LeaderBoard</button> 
-        <table>
-            <tr>
-                <th>Username</th>
-                <th>rank</th>
-                <th>wins</th>
-            </tr>
-            {data.map(item => <Display name={item} />)}
-    
-    </table> 
+        
     </div>);
 }

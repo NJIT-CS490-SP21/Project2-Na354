@@ -5,6 +5,7 @@ import { Board } from './Board.js';
 import { LogIn } from './LogIn.js';
 import { Reset } from './Reset.js';
 import { Leaderboard } from './Leaderboard.js';
+import { Display } from './DisplayL.js';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import {logedin} from './LogIn.js';
@@ -70,8 +71,8 @@ function App() {
     socket.on('Leaderboard', (data) => {
 
     if (LeaderOpen == 'true');        
-     const newList = [Leaderboard];
-     newList[0] = 'test';
+     const newList = [...data];
+     console.log(newList)
      Updateboard(newList);
     });
   }, []);
@@ -95,7 +96,17 @@ function App() {
     }
 
     if (LeaderOpen == "true"){
-        return(<Leaderboard/>);
+        return(<div><Leaderboard list={Leader_Data}/>
+        <table>
+            <tr>
+                <th>Username</th>
+                <th>rank</th>
+                <th>wins</th>
+            </tr>
+            {Leader_Data.map(item => <Display name={item} />)}
+    
+    </table>
+    </div>);
         
     }
 

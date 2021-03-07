@@ -3,11 +3,32 @@ from flask import Flask, send_from_directory, json, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
 import time
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 app = Flask(__name__, static_folder='./build/static')
 
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+db = SQLAlchemy(app)
 
+def converter(data):
+    return [item.makeReadable for item in data]
+    
+    
+import models
+Person=models.define_user_class(db)
+db.create_all()
+DB_Data = Person.query.all()
+players = converter(DB_Data)
+
+
+
+
+
+
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
@@ -27,11 +48,17 @@ def index(filename):
 def on_connect():
     print('User connected!')
     socketio.emit('connect', broadcast=True, include_self=False)
+   
+
+
 
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
     print('User disconnected!')
+    
+    
+
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
@@ -74,19 +101,37 @@ def on_reset():
 def on_logIn(data):
     global PLAYER_ID
     global PLAYER_LIST
+    NewName = True
     PLAYER_LIST.append(data['message'])
+    for users in players:
+        if data['message'] in users['username']:
+            NewName = False
+            
+    if NewName:
+        newPlayer = Person(username=data['message'], rank=100, wins=100)
+        db.session.add(newPlayer)
+        db.session.commit()
     print(PLAYER_LIST)
     data['message'] = PLAYER_LIST
     data['id'] = str(PLAYER_ID)
     data['board'] = LastBoard
     PLAYER_ID = PLAYER_ID + 1
     print(PLAYER_ID)
+    
+    
+    
     socketio.emit('LogIn',  data, broadcast=True, include_self=True)
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 
+LeaderBoard = []
 @socketio.on('Leaderboard')
 def on_LeaderboardOpen():
-    socketio.emit('Leaderboard', broadcast=True, include_self=True)
+    global LeaderBoard
+    LeaderBoard = []
+    for users in players:
+        LeaderBoard.append([users['username'], users['rank'], users['wins']])
+    print(LeaderBoard)
+    socketio.emit('Leaderboard', LeaderBoard, broadcast=True, include_self=True)
     print("opening Leaderboard")
     
 def CheckForWin():
@@ -97,11 +142,18 @@ def CheckForWin():
         if((LastBoard[i] != '') and (LastBoard[i] == LastBoard[(i+3)]) and (LastBoard[i] == LastBoard[(i+6)])):
             
             if(LastBoard[i] == 'x'):
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.wins:1+Person.wins}, synchronize_session = True)
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:1+Person.rank}, synchronize_session = True)
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:Person.rank-1}, synchronize_session = True)
+                db.session.commit()
                 socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
-                print("winner found")
                 
                 
             else:
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.wins:1+Person.wins}, synchronize_session = True)
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:1+Person.rank}, synchronize_session = True)
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:Person.rank-1}, synchronize_session = True)
+                db.session.commit()
                 socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
                 print("winner found")
              
@@ -144,7 +196,9 @@ def CheckForWin():
             else:
                 socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
                 print("winner found")
-                
+
+if __name__ == "__main__":
+    db.create_all()                 
 socketio.run(
     app,
     host=os.getenv('IP', '0.0.0.0'),

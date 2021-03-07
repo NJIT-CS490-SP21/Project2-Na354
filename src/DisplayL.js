@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 const socket = io();
 
 export function Display(props) {
-    console.log(props);
+    console.log("displaying data");
     return (
     <tr>
     <td>{props.name[0]}</td>
