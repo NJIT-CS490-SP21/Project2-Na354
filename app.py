@@ -20,9 +20,9 @@ def converter(data):
 import models
 Person=models.define_user_class(db)
 db.create_all()
-DB_Data = Person.query.all().order_by('rank')
+DB_Data = Person.query.all()
 players = converter(DB_Data)
-
+print(players)
 
 
 
@@ -166,11 +166,18 @@ def CheckForWin():
         if((LastBoard[i] != '') and (LastBoard[i] == LastBoard[(i+1)]) and (LastBoard[i] == LastBoard[(i+2)])):
             
             if(LastBoard[i] == 'x'):
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
+                db.session.commit()
                 socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
-                print("winner found")
                 
                 
             else:
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
+                db.session.commit()
                 socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
                 print("winner found")
                 
@@ -178,24 +185,38 @@ def CheckForWin():
     #checks Diagonal
     if((LastBoard[1] != '') and (LastBoard[1] == LastBoard[5]) and (LastBoard[1] ==  LastBoard[9])):
             
-            if(LastBoard[1] == 'x'):
+            if(LastBoard[i] == 'x'):
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
+                db.session.commit()
                 socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
-                print("winner found")
                 
                 
             else:
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
+                db.session.commit()
                 socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
                 print("winner found")
                 
     
     if((LastBoard[3] != '') and (LastBoard[3] == LastBoard[5]) and (LastBoard[3] ==  LastBoard[7])):
             
-            if(LastBoard[1] == 'x'):
+            if(LastBoard[i] == 'x'):
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
+                db.session.commit()
                 socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
-                print("winner found")
                 
                 
             else:
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
+                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
+                db.session.commit()
                 socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
                 print("winner found")
 
