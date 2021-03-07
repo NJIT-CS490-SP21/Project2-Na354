@@ -20,7 +20,7 @@ def converter(data):
 import models
 Person=models.define_user_class(db)
 db.create_all()
-DB_Data = Person.query.all()
+DB_Data = Person.query.order_by(Person.rank.desc())
 players = converter(DB_Data)
 print(players)
 
@@ -108,7 +108,7 @@ def on_logIn(data):
             NewName = False
             
     if NewName:
-        newPlayer = Person(username=data['message'], rank=100, wins=100)
+        newPlayer = Person(username=data['message'], rank=100, wins=0)
         db.session.add(newPlayer)
         db.session.commit()
     print(PLAYER_LIST)
@@ -127,7 +127,7 @@ LeaderBoard = []
 @socketio.on('Leaderboard')
 def on_LeaderboardOpen():
     global LeaderBoard
-    DB_Data = Person.query.all()
+    DB_Data = Person.query.order_by(Person.rank.desc())
     players = converter(DB_Data)
     LeaderBoard = []
     for users in players:
