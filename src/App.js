@@ -33,6 +33,9 @@ function App() {
     socket.on('board', (data) => {
         const newList = [...data.message];
         newList[10] = id;
+
+        console.log(newList);
+        console.log(id);
         changeList(newList);
     });
   }, []);
@@ -61,6 +64,7 @@ function App() {
         const newList = [...data];
         id = '';
         loged--;
+        console.log(newList);
         changeList(newList);
         isWinner = 'false';
     });
