@@ -11,10 +11,9 @@ import io from 'socket.io-client';
 import {logedin} from './LogIn.js';
 import {LeaderOpen} from './Leaderboard.js';
 
-const socket = io(); // Connects to socket connection
+export const socket = io(); // Connects to socket connection
 
 var id = '';
-var lastTurn = '0';
 export var haslogged = '';
 var loged = 0;
 var isWinner = 'false';
@@ -74,6 +73,7 @@ function App() {
      const newList = [...data];
      console.log(newList);
      Updateboard(newList);
+     //takes the player names as well
     });
   }, []);
   
