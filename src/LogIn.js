@@ -5,13 +5,14 @@ import io from 'socket.io-client';
 const socket = io();
 
 export var logedin = '';
-
+export var Username = '';
 export function LogIn() {
     logedin = '';
     const inputRef = useRef(null);
     
     function onClickButton(){
         const userText = inputRef.current.value;
+        Username = userText;
         logedin = 'true';
         socket.emit('LogIn', {message: userText});
     }
