@@ -2,15 +2,12 @@ import React from 'react';
 import { useState, useRef, useEffect } from 'react';
 import { Display } from './DisplayL.js';
 import io from 'socket.io-client';
-
-const socket = io();
+import {socket} from './App.js';
 
 export var LeaderOpen = 'false';
 
 
 export function Leaderboard() {
-
-const [data, changeData] = useState([['Abadio','100','5'], ['Sickist','96','3']]);
 
 
    function onClickButton(){

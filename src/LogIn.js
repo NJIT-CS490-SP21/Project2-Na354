@@ -2,7 +2,7 @@ import React from 'react';
 import './Board.css';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
-const socket = io();
+import {socket} from './App.js';
 
 export var logedin = '';
 export var Username = '';

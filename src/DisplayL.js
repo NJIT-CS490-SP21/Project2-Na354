@@ -2,8 +2,7 @@ import React from 'react';
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import {Username} from './LogIn.js';
-
-const socket = io();
+import {socket} from './App.js';
 
 export function Display(props) {
     const hStyle = { color: 'red' };
