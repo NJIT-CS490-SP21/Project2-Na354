@@ -1,45 +1,40 @@
-import logo from "./logo.svg";
-import "./App.css";
-import "./Board.css";
-import { Board } from "./Board.js";
-import { LogIn } from "./LogIn.js";
-import { Reset } from "./Reset.js";
-import { Leaderboard } from "./Leaderboard.js";
-import { Display } from "./DisplayL.js";
-import { useState, useRef, useEffect } from "react";
-import io from "socket.io-client";
-import { logedin } from "./LogIn.js";
-import { LeaderOpen } from "./Leaderboard.js";
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import './Board.css';
+import io from 'socket.io-client';
+import { Board } from './Board';
+import { LogIn, logedin } from './LogIn';
+import { Reset } from './Reset';
+import { Leaderboard, LeaderOpen } from './Leaderboard';
+import { Display } from './DisplayL';
 
 export const socket = io(); // Connects to socket connection
 
-var id = "";
-var lastTurn = "0";
-export var haslogged = "";
-var loged = 0;
-var isWinner = "false";
+let id = '';
+let loged = 0;
+let isWinner = 'false';
 
 function App() {
   const [myList, changeList] = useState([
-    "false",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "0",
-    "0",
+    'false',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '0',
+    '0',
   ]);
-  const [Players, AddPlayer] = useState(["", "", "", "", ""]);
-  const [Winner, DisplayWinner] = useState([""]);
-  const [Leader_Data, Updateboard] = useState([""]);
+
+  const [Winner, DisplayWinner] = useState(['']);
+  const [LeaderData, Updateboard] = useState(['']);
 
   useEffect(() => {
-    socket.on("board", (data) => {
+    socket.on('board', (data) => {
       const newList = [...data.message];
       newList[10] = id;
 
@@ -50,37 +45,37 @@ function App() {
   }, []);
 
   useEffect(() => {
-    socket.on("LogIn", (data) => {
-      //const newList = [...data.message];
+    socket.on('LogIn', (data) => {
+      // const newList = [...data.message];
       // console.log(newList);
 
-      if (logedin == "true" && loged == 0) {
+      if (logedin === 'true' && loged === 0) {
         id = data.id;
         const newList = [...data.board];
         newList[10] = id;
         changeList(newList);
 
-        loged++;
+        loged += 1;
       }
-      //AddPlayer(newList);
-      //console.log(Players);
+      // AddPlayer(newList);
+      // console.log(Players);
     });
   }, []);
 
   useEffect(() => {
-    socket.on("Reset", (data) => {
+    socket.on('Reset', (data) => {
       const newList = [...data];
-      id = "";
-      loged--;
+      id = '';
+      loged -= 1;
       console.log(newList);
       changeList(newList);
-      isWinner = "false";
+      isWinner = 'false';
     });
   }, []);
 
   useEffect(() => {
-    socket.on("Leaderboard", (data) => {
-      if (LeaderOpen == "true");
+    socket.on('Leaderboard', (data) => {
+      if (LeaderOpen === 'true');
       const newList = [...data];
       console.log(newList);
       Updateboard(newList);
@@ -88,53 +83,63 @@ function App() {
   }, []);
 
   useEffect(() => {
-    socket.on("winner", (data) => {
-      console.log("winner detected");
+    socket.on('winner', (data) => {
+      console.log('winner detected');
       const newList = [Winner];
       newList[0] = data;
       DisplayWinner(newList);
-      isWinner = "true";
+      isWinner = 'true';
     });
   }, []);
 
-  if (isWinner == "true") {
+  if (isWinner === 'true') {
     return (
       <div>
-        {" "}
-        The winner is: {Winner} <Reset />{" "}
+        {' '}
+        The winner is:
+        {' '}
+        {Winner}
+        {' '}
+        <Reset />
+        {' '}
       </div>
     );
   }
 
-  if (LeaderOpen == "true") {
+  if (LeaderOpen === 'true') {
     return (
       <div>
-        <Leaderboard list={Leader_Data} />
+        <Leaderboard list={LeaderData} />
         <table>
           <tr>
             <th>Username</th>
             <th>rank</th>
             <th>wins</th>
           </tr>
-          {Leader_Data.map((item) => (
+          {LeaderData.map((item) => (
             <Display name={item} />
           ))}
         </table>
       </div>
     );
-  } else if (id != "") {
+  } if (id !== '') {
     return (
       <div>
-        {" "}
-        <Board list={myList} changeList={changeList} /> <Reset />{" "}
-        <Leaderboard />{" "}
+        {' '}
+        <Board list={myList} changeList={changeList} />
+        {' '}
+        <Reset />
+        {' '}
+        <Leaderboard />
+        {' '}
       </div>
     );
-  } else if (id == "") {
+  } if (id === '') {
     return (
       <div>
-        {" "}
-        <LogIn />{" "}
+        {' '}
+        <LogIn />
+        {' '}
       </div>
     );
   }

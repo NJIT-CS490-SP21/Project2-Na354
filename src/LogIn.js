@@ -1,20 +1,18 @@
-import React from "react";
-import "./Board.css";
-import { useState, useRef, useEffect } from "react";
-import io from "socket.io-client";
-import { socket } from "./App.js";
+import React, { useRef } from 'react';
+import './Board.css';
+import { socket } from './App';
 
-export var logedin = "";
-export var Username = "";
+export let logedin = '';
+export let Username = '';
 export function LogIn() {
-  logedin = "";
+  logedin = '';
   const inputRef = useRef(null);
 
   function onClickButton() {
     const userText = inputRef.current.value;
     Username = userText;
-    logedin = "true";
-    socket.emit("LogIn", { message: userText });
+    logedin = 'true';
+    socket.emit('LogIn', { message: userText });
   }
 
   return (

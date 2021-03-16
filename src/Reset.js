@@ -1,13 +1,11 @@
-import React from "react";
-import "./Board.css";
-import { useState, useRef, useEffect } from "react";
-import io from "socket.io-client";
-const socket = io();
+import React from 'react';
+import './Board.css';
+import { socket } from './App';
 
 export function Reset() {
   function onClickButton() {
-    console.log("resetbutton");
-    socket.emit("Reset");
+    console.log('resetbutton');
+    socket.emit('Reset');
   }
 
   return (
