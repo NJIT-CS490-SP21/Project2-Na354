@@ -55,7 +55,7 @@ function App() {
         newList[10] = id;
         changeList(newList);
 
-        loged += 1;
+        loged++;
       }
       // AddPlayer(newList);
       // console.log(Players);
@@ -66,7 +66,7 @@ function App() {
     socket.on('Reset', (data) => {
       const newList = [...data];
       id = '';
-      loged -= 1;
+      loged--;
       console.log(newList);
       changeList(newList);
       isWinner = 'false';

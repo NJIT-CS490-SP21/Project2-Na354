@@ -1,229 +1,222 @@
 import os
+import time
 from flask import Flask, send_from_directory, json, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
-import time
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
-app = Flask(__name__, static_folder='./build/static')
+APP = Flask(__name__, static_folder='./build/static')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
-db = SQLAlchemy(app)
+APP.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+DB = SQLAlchemy(APP)
 
-def converter(data):
+
+def converter(data):  #test test
     return [item.makeReadable for item in data]
-    
-    
+
+
 import models
-Person=models.define_user_class(db)
-db.create_all()
-DB_Data = Person.query.order_by(Person.rank.desc())
-players = converter(DB_Data)
-print(players)
+
+Person = models.define_user_class(DB)
+DB.create_all()
+DB_DATA = Person.query.order_by(Person.rank.desc())
+PLAYERS = converter(DB_DATA)
+print(PLAYERS)
+
+CORS = CORS(APP, resources={r"/*": {"origins": "*"}})
+SOCKETIO = SocketIO(APP,
+                    cors_allowed_origins="*",
+                    json=json,
+                    manage_session=False)
 
 
-
-
-
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
-socketio = SocketIO(
-    app,
-    cors_allowed_origins="*",
-    json=json,
-    manage_session=False
-)
-
-@app.route('/', defaults={"filename": "index.html"})
-@app.route('/<path:filename>')
-
-
+@APP.route('/', defaults={"filename": "index.html"})
+@APP.route('/<path:filename>')
 def index(filename):
     return send_from_directory('./build', filename)
-    
+
+
 # When a client connects from this Socket connection, this function is run
-@socketio.on('connect')
+@SOCKETIO.on('connect')
 def on_connect():
     print('User connected!')
-    socketio.emit('connect', broadcast=True, include_self=False)
-   
-
+    SOCKETIO.emit('connect', broadcast=True, include_self=False)
 
 
 # When a client disconnects from this Socket connection, this function is run
-@socketio.on('disconnect')
+@SOCKETIO.on('disconnect')
 def on_disconnect():
     print('User disconnected!')
-    
-    
 
 
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 
-
-LastBoard = ['false','','','','','','','','','','0','0']
-Default = ['false','','','','','','','','','','0','0']
+lastBoard = ['false', '', '', '', '', '', '', '', '', '', '0', '0']
+Default = ['false', '', '', '', '', '', '', '', '', '', '0', '0']
 PLAYER_ID = 0
 PLAYER_LIST = []
 
-@socketio.on('board')
-def on_chat(data): # data is whatever arg you pass in your emit call on client
+
+@SOCKETIO.on('board')
+def on_chat(data):  # data is whatever arg you pass in your emit call on client
     print(data["message"][10])
-    global LastBoard
-    LastBoard = data['message']
-    print(LastBoard)
+    global lastBoard
+    lastBoard = data['message']
+    print(lastBoard)
     CheckForWin()
-    if('' not in LastBoard):
+    if '' not in lastBoard:
         print('BOARD FULL')
-        socketio.emit('board',  data, broadcast=True, include_self=True)
+        SOCKETIO.emit('board', data, broadcast=True, include_self=True)
         time.sleep(5)
         on_reset()
-    socketio.emit('board',  data, broadcast=True, include_self=True)
+    SOCKETIO.emit('board', data, broadcast=True, include_self=True)
 
 
-@socketio.on('Reset')
+@SOCKETIO.on('Reset')
 def on_reset():
     print('ResetBoard')
     global PLAYER_ID
     global PLAYER_LIST
-    global LastBoard
+    global lastBoard
     global Default
     PLAYER_ID = 0
     PLAYER_LIST = []
-    LastBoard = Default
-    socketio.emit('Reset', Default, broadcast=True, include_self=False)
-    
+    lastBoard = Default
+    SOCKETIO.emit('Reset', Default, broadcast=True, include_self=False)
 
-@socketio.on('LogIn')
+
+@SOCKETIO.on('LogIn')
 def on_logIn(data):
     global PLAYER_ID
     global PLAYER_LIST
     NewName = True
     PLAYER_LIST.append(data['message'])
-    for users in players:
+    for users in PLAYERS:
         if data['message'] in users['username']:
             NewName = False
-            
+
     if NewName:
         newPlayer = Person(username=data['message'], rank=100, wins=0)
-        db.session.add(newPlayer)
-        db.session.commit()
+        DB.session.add(newPlayer)
+        DB.session.commit()
     print(PLAYER_LIST)
     data['message'] = PLAYER_LIST
     data['id'] = str(PLAYER_ID)
-    data['board'] = LastBoard
+    data['board'] = lastBoard
     PLAYER_ID = PLAYER_ID + 1
     print(PLAYER_ID)
-    
-    
-    
-    socketio.emit('LogIn',  data, broadcast=True, include_self=True)
+
+    SOCKETIO.emit('LogIn', data, broadcast=True, include_self=True)
+
+
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 
 LeaderBoard = []
-@socketio.on('Leaderboard')
+
+
+@SOCKETIO.on('Leaderboard')
 def on_LeaderboardOpen():
     global LeaderBoard
-    DB_Data = Person.query.order_by(Person.rank.desc())
-    players = converter(DB_Data)
+    DB_DATA2 = Person.query.order_by(Person.rank.desc())
+    players = converter(DB_DATA2)
     LeaderBoard = []
     for users in players:
         LeaderBoard.append([users['username'], users['rank'], users['wins']])
     print(LeaderBoard)
-    socketio.emit('Leaderboard', LeaderBoard, broadcast=True, include_self=True)
+    SOCKETIO.emit('Leaderboard',
+                  LeaderBoard,
+                  broadcast=True,
+                  include_self=True)
     print("opening Leaderboard")
-    
+
+
+def playerOneWon():
+    update = DB.session.query(Person).filter(
+        Person.username == PLAYER_LIST[0]).update(
+            {Person.wins: 1 + Person.wins}, synchronize_session='evaluate')
+    update = DB.session.query(Person).filter(
+        Person.username == PLAYER_LIST[0]).update(
+            {Person.rank: 1 + Person.rank}, synchronize_session='evaluate')
+    update = DB.session.query(Person).filter(
+        Person.username == PLAYER_LIST[1]).update(
+            {Person.rank: Person.rank - 1}, synchronize_session='evaluate')
+    DB.session.commit()
+    SOCKETIO.emit('winner', PLAYER_LIST[0], broadcast=True, include_self=True)
+    print(update)
+
+
+def playerTwoWon():
+    update = DB.session.query(Person).filter_by(
+        Person.username == PLAYER_LIST[1]).update(
+            {Person.wins: 1 + Person.wins}, synchronize_session='evaluate')
+    update = DB.session.query(Person).filter_by(
+        Person.username == PLAYER_LIST[1]).update(
+            {Person.rank: 1 + Person.rank}, synchronize_session='evaluate')
+    update = DB.session.query(Person).filter_by(
+        Person.username == PLAYER_LIST[0]).update(
+            {Person.rank: Person.rank - 1}, synchronize_session='evaluate')
+    DB.session.commit()
+    SOCKETIO.emit('winner', PLAYER_LIST[1], broadcast=True, include_self=True)
+    print(update)
+
+
+def checkVertical():
+    for i in range(1, 4):
+        if lastBoard[i] != '' and (lastBoard[i] == lastBoard[(i + 3)] and
+                                   (lastBoard[i] == lastBoard[(i + 6)])):
+
+            if lastBoard[i] == 'x':
+                playerOneWon()
+
+            else:
+                playerTwoWon()
+
+
+def checkHorizontal():
+    for i in range(1, 8, 3):
+        print(i)
+        if ((lastBoard[i] != '') and (lastBoard[i] == lastBoard[(i + 1)])
+                and (lastBoard[i] == lastBoard[(i + 2)])):
+
+            if lastBoard[i] == 'x':
+                playerOneWon()
+
+            else:
+                playerTwoWon()
+
+
 def CheckForWin():
     print("checking for winner")
-    
-    #check Vertical Win condition
-    for i in range(1,4):
-        if((LastBoard[i] != '') and (LastBoard[i] == LastBoard[(i+3)]) and (LastBoard[i] == LastBoard[(i+6)])):
-            
-            if(LastBoard[i] == 'x'):
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
-                db.session.commit()
-                socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
-                
-                
-            else:
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
-                db.session.commit()
-                socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
-                print("winner found")
-             
-    
-    #check Horiziontal Win condition
-    for i in range(1,8,3):
-        print(i)
-        if((LastBoard[i] != '') and (LastBoard[i] == LastBoard[(i+1)]) and (LastBoard[i] == LastBoard[(i+2)])):
-            
-            if(LastBoard[i] == 'x'):
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
-                db.session.commit()
-                socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
-                
-                
-            else:
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
-                db.session.commit()
-                socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
-                print("winner found")
-                
-                
+    checkVertical()
+    checkHorizontal()
     #checks Diagonal
-    if((LastBoard[1] != '') and (LastBoard[1] == LastBoard[5]) and (LastBoard[1] ==  LastBoard[9])):
-            
-            if(LastBoard[i] == 'x'):
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
-                db.session.commit()
-                socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
-                
-                
-            else:
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
-                db.session.commit()
-                socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
-                print("winner found")
-                
-    
-    if((LastBoard[3] != '') and (LastBoard[3] == LastBoard[5]) and (LastBoard[3] ==  LastBoard[7])):
-            
-            if(LastBoard[i] == 'x'):
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
-                db.session.commit()
-                socketio.emit('winner', PLAYER_LIST[0],  broadcast=True, include_self=True)
-                
-                
-            else:
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.wins:1+Person.wins}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[1]).update({Person.rank:1+Person.rank}, synchronize_session = 'evaluate')
-                x = db.session.query(Person).filter(Person.username==PLAYER_LIST[0]).update({Person.rank:Person.rank-1}, synchronize_session = 'evaluate')
-                db.session.commit()
-                socketio.emit('winner', PLAYER_LIST[1],  broadcast=True, include_self=True)
-                print("winner found")
+    if (lastBoard[1] != '') and (lastBoard[1] == lastBoard[5] and
+                                 (lastBoard[1] == lastBoard[9])):
+
+        if lastBoard[5] == 'x':
+            playerOneWon()
+
+        else:
+            playerTwoWon()
+
+    if (lastBoard[3] != '') and (lastBoard[3] == lastBoard[5] and
+                                 (lastBoard[3] == lastBoard[7])):
+
+        if lastBoard[5] == 'x':
+            playerOneWon()
+
+        else:
+            playerTwoWon()
+
 
 if __name__ == "__main__":
-    db.create_all()                 
-socketio.run(
-    app,
+    DB.create_all()
+SOCKETIO.run(
+    APP,
     host=os.getenv('IP', '0.0.0.0'),
     port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
 )
