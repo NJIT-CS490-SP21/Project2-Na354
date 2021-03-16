@@ -15,12 +15,12 @@ export function Leaderboard() {
   if (LeaderOpen === 'false') {
     return (
       <div>
-        <button onClick={onClickButton}>LeaderBoard</button>
+        <button type="button" tabIndex={0} onClick={onClickButton}>LeaderBoard</button>
       </div>
     );
   } return (
     <div>
-      <button onClick={onClickButton}>LeaderBoard</button>
+      <button type="button" tabIndex={0} onClick={onClickButton}>LeaderBoard</button>
     </div>
   );
 }

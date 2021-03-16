@@ -87,3 +87,4 @@ export function Board(props) {
     </div>
   );
 }
+export default Board;

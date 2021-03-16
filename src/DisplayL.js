@@ -26,3 +26,5 @@ export function Display(props) {
     </tr>
   );
 }
+
+export default Display;

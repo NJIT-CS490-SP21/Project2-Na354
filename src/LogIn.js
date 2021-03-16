@@ -18,7 +18,7 @@ export function LogIn() {
   return (
     <div>
       <input ref={inputRef} type="text" />
-      <button onClick={onClickButton}>Add to List</button>
+      <button type="button" tabIndex={0} onClick={onClickButton}>Add to List</button>
     </div>
   );
 }
