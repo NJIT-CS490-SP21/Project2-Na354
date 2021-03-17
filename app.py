@@ -100,9 +100,8 @@ def on_logIn(data):
             NewName = False
 
     if NewName:
-        newPlayer = Person(username=data['message'], rank=100, wins=0)
-        DB.session.add(newPlayer)
-        DB.session.commit()
+        add_user(data['message'])
+        
     print(PLAYER_LIST)
     data['message'] = PLAYER_LIST
     data['id'] = str(PLAYER_ID)
@@ -112,7 +111,10 @@ def on_logIn(data):
 
     SOCKETIO.emit('LogIn', data, broadcast=True, include_self=True)
 
-
+def add_user(username):
+    newPlayer = Person(username=username, rank=100, wins=0)
+    DB.session.add(newPlayer)
+    DB.session.commit()
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 
 LeaderBoard = []
@@ -150,13 +152,13 @@ def playerOneWon():
 
 
 def playerTwoWon():
-    update = DB.session.query(Person).filter_by(
+    update = DB.session.query(Person).filter(
         Person.username == PLAYER_LIST[1]).update(
             {Person.wins: 1 + Person.wins}, synchronize_session='evaluate')
-    update = DB.session.query(Person).filter_by(
+    update = DB.session.query(Person).filter(
         Person.username == PLAYER_LIST[1]).update(
             {Person.rank: 1 + Person.rank}, synchronize_session='evaluate')
-    update = DB.session.query(Person).filter_by(
+    update = DB.session.query(Person).filter(
         Person.username == PLAYER_LIST[0]).update(
             {Person.rank: Person.rank - 1}, synchronize_session='evaluate')
     DB.session.commit()
