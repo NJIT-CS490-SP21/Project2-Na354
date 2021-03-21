@@ -71,7 +71,7 @@ def on_chat(data):  # data is whatever arg you pass in your emit call on client
     if '' not in lastBoard:
         print('BOARD FULL')
         SOCKETIO.emit('board', data, broadcast=True, include_self=True)
-        time.sleep(5)
+        time.sleep(1)
         on_reset()
     SOCKETIO.emit('board', data, broadcast=True, include_self=True)
 
@@ -86,7 +86,7 @@ def on_reset():
     PLAYER_ID = 0
     PLAYER_LIST = []
     lastBoard = Default
-    SOCKETIO.emit('Reset', Default, broadcast=True, include_self=False)
+    SOCKETIO.emit('Reset', Default, broadcast=True, include_self=True)
 
 
 @SOCKETIO.on('LogIn')
@@ -101,7 +101,6 @@ def on_logIn(data):
 
     if NewName:
         add_user(data['message'])
-        
     print(PLAYER_LIST)
     data['message'] = PLAYER_LIST
     data['id'] = str(PLAYER_ID)
@@ -148,8 +147,8 @@ def playerOneWon():
             {Person.rank: Person.rank - 1}, synchronize_session='evaluate')
     DB.session.commit()
     SOCKETIO.emit('winner', PLAYER_LIST[0], broadcast=True, include_self=True)
+    
     print(update)
-
 
 def playerTwoWon():
     update = DB.session.query(Person).filter(

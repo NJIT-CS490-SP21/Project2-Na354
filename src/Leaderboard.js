@@ -1,4 +1,5 @@
 import React from 'react';
+import './Leaderboard.css';
 import { socket } from './App';
 
 export var LeaderOpen = 'false';
@@ -14,13 +15,13 @@ export function Leaderboard() {
 
   if (LeaderOpen === 'false') {
     return (
-      <div>
-        <button type="button" tabIndex={0} onClick={onClickButton}>LeaderBoard</button>
+      <div className = 'bar-2'>
+        <button className = "button" tabIndex={0} onClick={onClickButton}>LeaderBoard</button>
       </div>
     );
   } return (
-    <div>
-      <button type="button" tabIndex={0} onClick={onClickButton}>LeaderBoard</button>
+    <div className = 'bar-2'>
+      <button className="button" tabIndex={0} onClick={onClickButton}>LeaderBoard</button>
     </div>
   );
 }

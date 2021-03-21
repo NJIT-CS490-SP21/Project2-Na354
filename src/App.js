@@ -110,12 +110,15 @@ function App() {
     return (
       <div>
         <Leaderboard list={LeaderData} />
-        <table>
+        <table className = 'table'>
+        <div>
           <tr>
-            <th>Username</th>
-            <th>rank</th>
-            <th>wins</th>
+            <th className = 'title'>Username</th>
+            <th className = 'title'>rank</th>
+            <th className = 'title'>wins</th>
           </tr>
+        </div>
+          <br/>
           {LeaderData.map((item) => (
             <Display name={item} />
           ))}
@@ -124,13 +127,17 @@ function App() {
     );
   } if (id !== '') {
     return (
-      <div>
+      <div className = 'game'>
         {' '}
         <Board list={myList} changeList={changeList} />
         {' '}
+        
         <Reset />
+        
         {' '}
+        
         <Leaderboard />
+        
         {' '}
       </div>
     );

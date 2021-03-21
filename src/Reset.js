@@ -1,5 +1,5 @@
 import React from "react";
-import "./Board.css";
+import "./Reset.css";
 import { useState, useRef, useEffect } from "react";
 import io from "socket.io-client";
 const socket = io();
@@ -11,8 +11,11 @@ export function Reset() {
   }
 
   return (
-    <div>
-      <button onClick={onClickButton}>Reset Game</button>
+    
+    <div className = 'bar'>
+    <div className = 'center'>
+      <button className = 'button' onClick={onClickButton}>Reset Game</button>
+    </div>
     </div>
   );
 }

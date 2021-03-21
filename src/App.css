@@ -36,3 +36,27 @@
     transform: rotate(360deg);
   }
 }
+
+.title{
+	float:left;
+	width:33.3%;
+	border:3px solid #0cc0ed;
+	padding:10px 100px;
+	box-sizing:border-box;
+}
+
+.table{
+   border-radius: 25px;
+  background: #73AD21;
+  padding: 20px;
+  margin:auto;
+}
+
+.game {
+  border-radius: 50px;
+    background: #777;
+    padding: 20px;
+    width: 80%;
+    margin:auto;
+    margin-top: 20px;
+}

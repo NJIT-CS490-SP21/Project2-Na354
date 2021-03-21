@@ -1,0 +1,9 @@
+import unittest
+import unittest.mock as mock
+from unittest.mock import patch
+import os
+import sys
+import app
+
+# This lets you import from the parent directory (one level up)
+sys.path.append(os.path.abspath('../'))

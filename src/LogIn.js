@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import './Board.css';
+import './LogIn.css';
 import { socket } from './App';
 
 export let logedin = '';
@@ -16,9 +16,11 @@ export function LogIn() {
   }
 
   return (
-    <div>
-      <input ref={inputRef} type="text" />
-      <button onClick={onClickButton}>Add to List</button>
+    <div className="container">
+    <div className="login">
+      <input className= "text" ref={inputRef} type="text" />
+      <button className= "button" onClick={onClickButton}>Login</button>
+    </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Username } from './LogIn';
+import './Display.css';
 
 export function Display(props) {
   Display.propTypes = {
@@ -13,16 +14,16 @@ export function Display(props) {
   if (lister[0] === Username) {
     return (
       <tr>
-        <td style={hStyle}>{lister[0]}</td>
-        <td style={hStyle}>{lister[1]}</td>
-        <td style={hStyle}>{lister[2]}</td>
+        <td className = 'block' style={hStyle}>{lister[0]}</td>
+        <td className = 'block' style={hStyle}>{lister[1]}</td>
+        <td className = 'block' style={hStyle}>{lister[2]}</td>
       </tr>
     );
   } return (
     <tr>
-      <td>{lister[0]}</td>
-      <td>{lister[1]}</td>
-      <td>{lister[2]}</td>
+      <td className = 'block'> {lister[0]}</td>
+      <td className = 'block'>{lister[1]}</td>
+      <td className = 'block'>{lister[2]}</td>
     </tr>
   );
 }

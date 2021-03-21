@@ -1,0 +1,41 @@
+.login {
+  border-radius: 25px; /* Shows the lines in the CSS grid */
+  border: 2px solid #0cc0ed;
+  margin:auto;
+  margin-top: 5px;
+  margin-left:20px;
+  margin-right:20px;
+  padding:10px;
+}
+
+.button {
+font-family: Arial, Helvetica, sans-serif;
+background-color: #0cc0ed;
+color:#fff;
+padding:5px 5px;
+border:none;
+margin:auto;
+width: 15%;
+}
+
+.button:hover{
+	background: #051e99;
+	color:#fff;
+}
+
+.container {
+    border-radius: 25px;
+    background: #73AD21;
+    padding: 20px;
+    width: 80%;
+    margin:auto;
+    margin-top: 20px;
+    
+
+}
+
+.text {
+    font: normal 16px Arial, Helvetica, sans-serif;
+    margin:auto;
+    width: 30%;
+}
