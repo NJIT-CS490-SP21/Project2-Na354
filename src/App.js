@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import {logedin} from './LogIn.js';
 
-const socket = io(); // Connects to socket connection
+export const socket = io(); // Connects to socket connection
 
 var id = '';
 var player = '';
