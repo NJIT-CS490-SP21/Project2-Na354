@@ -1,8 +1,7 @@
 import React from 'react';
 import './Board.css';
 import { useState, useRef, useEffect } from 'react';
-import io from 'socket.io-client';
-const socket = io();
+import { socket } from './App';
 
 export var logedin = '';
 
@@ -19,7 +18,7 @@ export function LogIn() {
     return(
     <div>
     <input ref={inputRef} type="text"/>
-    <button onClick={onClickButton}>Add to List</button>
+    <button onClick={onClickButton}>Login</button>
     </div>
     );
 }
