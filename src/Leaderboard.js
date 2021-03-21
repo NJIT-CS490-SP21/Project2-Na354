@@ -1,9 +1,7 @@
 import React from 'react';
 import { useState, useRef, useEffect } from 'react';
 import { Display } from './DisplayL.js';
-import io from 'socket.io-client';
-
-const socket = io();
+import {socket} from './App.js';
 
 export var LeaderOpen = 'false';
 

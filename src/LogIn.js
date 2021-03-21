@@ -19,7 +19,7 @@ export function LogIn() {
     return(
     <div>
     <input ref={inputRef} type="text"/>
-    <button onClick={onClickButton}>Login</button>
+    <button onClick={onClickButton}>LOGIN</button>
     </div>
     );
 }
