@@ -1,7 +1,10 @@
 import React from 'react';
 import './Board.css';
 import { useState, useRef, useEffect } from 'react';
-import { socket } from './App';
+import io from 'socket.io-client';
+
+
+const socket = io();
 export function Reset() {
     
     function onClickButton(){
