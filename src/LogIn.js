@@ -1,7 +1,6 @@
 import React from 'react';
 import './Board.css';
 import { useState, useRef, useEffect } from 'react';
-import io from 'socket.io-client';
 import {socket} from './App.js';
 
 export var logedin = '';

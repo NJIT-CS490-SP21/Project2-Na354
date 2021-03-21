@@ -94,7 +94,7 @@ def on_reset():
     PLAYER_ID = 0
     PLAYER_LIST = []
     LastBoard = Default
-    socketio.emit('Reset', Default, broadcast=True, include_self=False)
+    socketio.emit('Reset', Default, broadcast=True, include_self=True)
     
 
 @socketio.on('LogIn')
